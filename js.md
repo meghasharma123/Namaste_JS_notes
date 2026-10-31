@@ -185,7 +185,6 @@ A JavaScript engine is a specialized computer program that parses, interprets, a
 
 - A higher-order function (HOF) is a function that either takes one or more functions as arguments, returns a function as its result, or both.
 
-
 Method	                             Purpose	
 map()	Transforms every item in an array and returns a new array.	
 Example: [1, 2].map(n => n * 2) → [2, 4]
@@ -198,3 +197,70 @@ Example: [1, 2, 3].reduce((acc, n) => acc + n, 0) → 6
 
 forEach()	Iterates over items to execute a side effect.	
 Example: ['A', 'B'].forEach(x => console.log(x))
+
+# Throttling and debouncing
+
+- Debouncing delays function execution until a certain period of inactivity. It is useful for search inputs where we don't want to make an API request on every keystroke.
+
+- Throttling limits function execution to at most once within a specified time interval. It is useful for frequently triggered events such as scrolling and mouse movements.
+
+`The main difference is that debouncing waits for inactivity, whereas throttling controls the execution frequency.`
+
+```
+function debounce(func, delay) {
+    let timer;
+
+    return function (...args) {
+        clearTimeout(timer);
+
+        timer = setTimeout(() => {
+            func.apply(this, args);
+        }, delay);
+    };
+}
+
+const search = debounce((value) => {
+    console.log("API called:", value);
+}, 500);
+```
+
+## Call
+
+- Calls a function immediately and passes arguments individually.
+
+## apply
+
+- Same as call(), but passes arguments as an array.
+
+## bind()
+
+- Doesn't execute the function immediately. It returns a new function with this bound to the supplied object.
+
+```
+const user = {
+    name: "Megha"
+};
+
+function greet(city, country) {
+    console.log(`Hello ${this.name}, from ${city}, ${country}`);
+}
+
+greet.call(user, "Bangalore", "India");
+greet.apply(user, ["Bangalore", "India"]);
+const newGreet = greet.bind(user, "Bangalore", "India");
+
+newGreet();
+```
+
+# Promise
+
+- `Promise.all()` succeeds only if every promise succeeds. It rejects immediately when any input promise rejects.
+
+- `Promise.allSettled()` waits for every promise to settle, whether fulfilled or rejected, and returns the status and result of each.
+
+- `Promise.race()` Returns the result of the first promise to settle, whether fulfilled or rejected.
+
+- `Promise.any()` Returns the first successfully fulfilled promise. Ignores rejections unless all promises reject.
+
+
+
