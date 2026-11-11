@@ -237,3 +237,152 @@ left: 100px;
 width: 200px;
 ```
 
+
+## Asset Optimization
+
+- Images
+- Videos
+- Fonts
+- CSS
+- JS
+
+### Image Optimization
+
+`Modern formats` -> Use WebP or AVIF instead of JPEG/PNG for smaller file sizes.
+```
+<picture>
+  <source srcset="image.avif" type="image/avif" />
+  <source srcset="image.webp" type="image/webp" />
+  <img src="image.jpg" alt="Product" />
+</picture>
+```
+
+`Compression` -> Reduce image file size while maintaining acceptable quality.
+`Responsive images` -> Serve different image sizes based on screen resolution using srcset and sizes.
+```
+<img
+  src="image-800.webp"
+  srcset="
+    image-400.webp 400w,
+    image-800.webp 800w,
+    image-1200.webp 1200w
+  "
+  sizes="(max-width: 600px) 400px, 800px"
+  alt="Product"
+/>
+```
+`Lazy loading` -> Load images only when they are near the viewport. ex: <img src="product.webp" loading="lazy" alt="Product" />
+`Image CDN` -> Resize, compress, and optimize images dynamically at the CDN level.
+`Caching` -> Cache images in the browser using HTTP cache headers.
+`Preloading` -> Preload important images, especially the LCP/hero image.
+```
+<link
+  rel="preload"
+  as="image"
+  href="/hero.avif"
+  fetchpriority="high"
+/>
+```
+`Placeholder images` -> Show a low-quality placeholder or blurred image while the actual image loads.
+`Width and height` -> Specify image dimensions to prevent layout shifts (CLS).
+`Avoid unnecessary images` -> Use CSS for simple shapes/icons instead of image assets.
+
+**Main are**
+
+1. Lazy loading vs preloading.
+2. Responsive images (srcset and sizes).
+3. Image CDN and browser caching.
+
+### Video Optimization
+
+`Adaptive Bitrate Streaming (ABR)` -> Automatically adjusts video quality based on network speed.
+`HLS / DASH` -> Breaks videos into small segments and streams them progressively. [HTTP Live Streaming (Apple), Dynamic Adaptive Streaming over HTTP (MPEG standard).]
+`Video compression` -> Reduces file size using codecs like H.264, H.265, AV1.
+`CDN` -> Delivers video segments from geographically closer servers.
+`Lazy loading`	Loads video resources only when needed or near the viewport.
+`Preloading`	Preloads metadata or initial video data to improve startup.
+`Poster image`	Displays a thumbnail before video playback.
+`Caching`	Caches video segments to reduce repeated network requests.
+`Resolution optimization`	Serves appropriate resolutions (360p, 720p, 1080p, etc.).
+`Web Workers`	Offloads supported video-processing tasks from the main thread.
+
+**I would use adaptive bitrate streaming with HLS or DASH so video quality adjusts based on network conditions. I would transcode videos into multiple resolutions, compress them using efficient codecs, and distribute segments through a CDN. On the frontend, I would use lazy loading, poster images, appropriate preload strategies, and caching. For live interactive video, I would consider WebRTC. I would also monitor startup time, buffering ratio, and playback failures.**
+
+`HLS / DASH`	-> Video streaming
+`WebRTC`	Real-time communication
+`CDN`	Content delivery
+`ABR`	Dynamic quality adjustment
+`FFmpeg`	Video processing and transcoding
+
+### Font Optimization
+
+- Goal: Reduce font loading time, avoid invisible text, and improve rendering performance.
+
+`System fonts`	Prefer browser/system fonts when custom branding isn't required.
+`font-display: swap`	Show fallback text first, then swap to the custom font (FOUT).
+`WOFF2`	Prefer compressed font formats; provide fallback formats if needed.
+`Preload`	Load critical fonts early using rel="preload".
+`Font subsetting`	Include only required characters, weights, and styles.
+`Data URI`	Embed small fonts using Base64 to avoid an additional request, but increases CSS size.
+`Font Face Observer`	Programmatically detect when fonts load and apply a CSS class.
+`Preconnect`	Establish an early connection to an external font domain.
+
+`FOUT`: Flash of Unstyled Text — fallback font appears first, then the custom font.
+`FOIT`: Flash of Invisible Text — text remains invisible until the custom font loads.
+font-display: swap helps avoid FOIT.
+
+### CSS optimization
+
+- Goal: Avoid render-blocking CSS and render the critical part of the page as quickly as possible.
+
+`Critical CSS`	Load above-the-fold styles first.
+`CSS splitting`	Split CSS based on components, pages, or usage.
+`Async CSS`	Load non-critical CSS without blocking initial rendering.
+`Lazy loading CSS`	Load stylesheets when they are actually needed.
+`Media attribute`	Load CSS conditionally for screen, print, portrait, etc.
+`Preload CSS`	Fetch important styles early and apply them when ready.
+`CSS-in-JS`	Load component-related styles alongside components.
+
+**Critical CSS should load first; non-critical CSS can load asynchronously or when needed.**
+
+[HTML parsing] ->  [CSS download and parsing] -> [CSSOM + DOM → Render Tree] -> [Layout → Paint → Composite]
+
+*CSS can block rendering until the browser has processed the stylesheets required for the page.*
+
+### JavaScript loading optimization
+
+- Goal: Avoid blocking HTML parsing and improve initial page rendering.
+
+`<script src="app.js"></script>` : HTML parsing stops.Script downloads and executes.HTML parsing resumes.
+
+`<script async src="app.js"></script>` : Downloads in parallel with HTML parsing.Executes immediately when downloaded.Can interrupt HTML parsing.Execution order is not guaranteed.
+
+`<script defer src="app.js"></script>` : Downloads in parallel with HTML parsing.Executes after HTML parsing completes.Maintains execution order among deferred scripts.Executes before DOMContentLoaded.
+
+#### JS modules
+
+`<script type="module" src="app.js"></script>` 
+
+* Modules are deferred by default.
+* Support imports and exports.
+* Execute after HTML parsing.
+* async can also be applied to module scripts.
+
+*Use defer for scripts that depend on the DOM or need predictable execution order. Use async for independent scripts such as analytics.*
+
+### JavaScript execution optimization – Web Workers
+
+- Goal: Move heavy computations away from the main thread to keep the UI responsive.
+
+When to use Web Workers?
+- Large data processing.
+- Analytics and chart calculations.
+- Image processing.
+- Complex mathematical calculations.
+
+When NOT to use?
+- DOM manipulation.
+- Small computations.
+- Tasks requiring immediate UI updates.
+
+*Web Workers cannot directly manipulate the DOM. Communication between the main thread and workers has overhead.*
