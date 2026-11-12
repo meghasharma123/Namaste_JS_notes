@@ -386,3 +386,19 @@ When NOT to use?
 - Tasks requiring immediate UI updates.
 
 *Web Workers cannot directly manipulate the DOM. Communication between the main thread and workers has overhead.*
+
+## FSD - Networking
+
+1. How web works? Rendering of web page (DOM, CSSOM, Paint, Render tree, layout)
+2. Protocols - http, https, http2, http3, tcp, udp, smtp, ftp
+3. API - rest, graphql, query/mutation, dataloader, batching, grpc
+4. short polling, long polling, ws, server sent event, webhooks
+5. Security - I/o senitization, XSS, CSRF, CORS, Auth, security headers, SSRF, SRI, Permission policy, compliance, dependency security.
+6. Performance - React, JS, Build, ntework and assets Optimization, performance tools, rendering pattern(CSR, SSR, SSG, RSC)
+7. caching and db - localstorage, cookies, session storage, normalization, indexdb, state management, http caching, service worker, API caching
+8. Testing - E2E testing (Playwright, Cypress)
+9. Offline support - Service worker, Blob, PWA(progressive web app)
+10. Accessibility - keyboard, screen reader, color contracts
+11. Logging and debugging - alerting and fixing, telemetry and tools
+
+![alt text](./img/roadmap.png)
