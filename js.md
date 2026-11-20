@@ -60,7 +60,7 @@ var z = x();
 ```
 so here whenever z is called we can access that a variable for log as it is inside the lexical scope of y function. Also we get 100 as 'a' is indicating the reference of the variable and not the value, so whatever change will be impacted.
 
-- Closures use: module design pattern, currying, memoize, iterators, setTimeouts etc.
+**Closures use: module design pattern, currying, memoize, iterators, setTimeouts etc.**
 
 Q. Output is 6,6,6,6...
 ```
@@ -204,6 +204,40 @@ Example: ['A', 'B'].forEach(x => console.log(x))
 
 - Throttling limits function execution to at most once within a specified time interval. It is useful for frequently triggered events such as scrolling and mouse movements.
 
+Debouncing |	Throttling
+------------|---------------
+Executes after inactivity	| Executes at controlled intervals
+Resets timer on every event |	Limits execution frequency
+Search input | 	Scroll / resize events
+Avoids unnecessary API calls |	Controls frequent executions
+
+```
+function debounce(fn, delay) {
+    let timer;
+
+    return function (...args) {
+        clearTimeout(timer);
+
+        timer = setTimeout(() => {
+            fn(...args);
+        }, delay);
+    };
+}
+
+function throttle(fn, delay) {
+    let lastCall = 0;
+
+    return function (...args) {
+        const now = Date.now();
+
+        if (now - lastCall >= delay) {
+            lastCall = now;
+            fn(...args);
+        }
+    };
+}
+```
+
 `The main difference is that debouncing waits for inactivity, whereas throttling controls the execution frequency.`
 
 ```
@@ -262,5 +296,100 @@ newGreet();
 
 - `Promise.any()` Returns the first successfully fulfilled promise. Ignores rejections unless all promises reject.
 
+# Question
 
+### Does JavaScript execute variable declarations before executing the code?
+
+=> JavaScript performs memory creation and code execution when creating an execution context. During memory creation, var variables are initialized with undefined, whereas let and const are hoisted but remain uninitialized in the `Temporal Dead Zone`. Accessing them before initialization results in a `ReferenceError`.
+
+### Regular vs Arrow function
+
+=> main difference is of this variable. 
+- Regular functions have their own this, determined by how they are called.
+- Arrow functions don't have their own this. They inherit it lexically from their surrounding scope.
+
+```
+const user = {
+    name: "Megha",
+    greet() {
+        console.log(this.name);
+    }
+};
+
+user.greet(); // Megha
+
+const greetFn = user.greet;
+greetFn(); // undefined (strict mode)
+```
+
+Why? Because the second call is a standalone function call, so it loses the user object as its this context.
+
+Rule |	Explanation
+-------- | ----------
+Default binding	| Standalone function call
+Implicit binding |	object.method()
+Explicit binding |	call(), apply(), bind()
+Arrow function |	Inherits this from lexical scope
+
+## What is the prototype chain?
+JavaScript uses prototypal inheritance.
+
+When you access a property on an object:
+1. JavaScript first checks the object itself.
+2. If the property isn't found, it checks its prototype.
+3. If still not found, it checks the prototype's prototype.
+4. This continues until it reaches null.
+
+## Difference between __proto__ and prototype
+__proto__ |	prototype
+--------|---------------
+Accessor for an object's prototype |	Property of constructor functions
+Exists on objects through inheritance |	Used when creating objects with new
+Helps access the prototype chain |	Defines what becomes the new object's prototype
+
+```
+function User(name) {
+    this.name = name;
+}
+
+User.prototype.greet = function () {
+    console.log("Hello " + this.name);
+};
+
+const user = new User("Megha");
+
+user.greet(); // Hello Megha
+
+console.log(user.__proto__ === User.prototype); // true
+```
+
+Remember:
+- User.prototype belongs to the constructor function.
+- user.__proto__ points to the prototype used by that object.
+- Object.getPrototypeOf(user) is the preferred way to inspect an object's prototype.
+- `hasOwnProperty()` checks only own properties.
+- `in checks` own + inherited properties.
+
+`Array.__proto__ => Array.prototype`
+
+`arr.__proto__.__proto__ => object. prototype => arr.__proto__.__proto__.__proto__ =>  null`
+
+## What is a memory leak?
+A `memory leak` occurs when memory is no longer needed by the application but remains reachable, preventing garbage collection.
+
+Common causes:
+1. Unremoved event listeners.
+2. Unnecessary global variables.
+3. Uncleared timers and intervals.
+4. Unbounded caches.
+5. Closures retaining unnecessary references.
+
+How to prevent memory leaks:
+- Remove unnecessary event listeners.
+- Clear intervals and timers.
+- Limit cache sizes.
+- Release unnecessary references.
+- Monitor memory using Chrome DevTools or Node.js heap snapshots.
+
+**A closure retains access to its lexical environment, but that doesn't mean every variable in the outer function must remain in memory. Modern JavaScript engines can optimize unused references.**
 
